@@ -5,20 +5,17 @@
 
 
 require "Twitter"
-
+require_relative 'Twit_Init'
 
 class TablaBot
 	@@currently_running = false
 	@@bols= Hash[0,"Ta",1,"Tin",2,"Tun",3,"Din",4,"Te",5,"Re",6,"Tha",7,"Ge",8,"Ka",9,"Dha",10,"Dha2",11,"Dha3",12,"Dhi",13,"Dhe",14,"Dhet",15,"Kre",16,"The",17,"The2",18,"-"]
 
-		@@client = Twitter::REST::Client.new do |config|
-  			config.consumer_key        = ""
-  			config.consumer_secret     = ""
- 			config.access_token        = ""
- 			config.access_token_secret = ""
-		end
+		Twit_id = Twitilize.new
+		@@client = Twit_id.initialize_TablaBot
 
-    @@status = @@client.mentions_timeline.size
+    @@status = @@client.mentions_timeline
+    @@last_id = @@status[0].id
     @@total_cycles=0
 	
 
@@ -40,49 +37,51 @@ class TablaBot
 		return str
 	end
 
-	def composition_response num_change
+	def composition_response name
 
-
-		num_change.times do|x|
-
-			puts "Tweeting to #{@@status[x].user.screen_name}"
-			@@client.follow(@@status[x].user.screen_name)
-			com = tweet_composition @@status[x].user.screen_name
-			@@client.update(com)
-		end
+		puts "Tweeting to #{name}"
+		@@client.follow(name)
+		com = tweet_composition name
+		@@client.update(com)
 	end
 
 	def monitor
 		@@currently_running = true
-		updated_status = @@status
 
 		10.times do |x|
 			puts "#{@@total_cycles} cycles have run thus far"
 			@@total_cycles+=1
-			puts "sleep cycle #{x}"
+			puts "sub cycle #{x} of 10"
 			sleep(120)
-	  begin
+	     begin
 			puts "checking status"
-			@@status = @@client.mentions_timeline.size
+			@@status = @@client.mentions_timeline
 
-	  rescue
-	  	puts "We hit an error with Twitter"
-	  	(0..20).each do |t|
-	  		puts "Waiting for #{20-t} seconds then retrying"
+	     rescue
+	     	puts "We hit an error with Twitter"
+	     	puts "Waiting for 20 seconds then retrying"
+	     	(0..20).each do |t|
+	  		puts "#{20-t}"
 	  		sleep(1)
-	  	end
-	  	puts "Reboot!"
-	  	@@currently_running = false
-	  	keep_going
-	  end
+	    	end
+	    	puts "Reboot!"
+	    	@@currently_running = false
+	    	keep_going
+	      end
 
-			if @@status > updated_status
+			if @@last_id != @@status[0].id
 
-				puts "status: updating tweeting"
-				dif = @@status-updated_status
-				composition_response dif
-				updated_status = @@status
-				puts "tweet/s sent"
+				puts "status: responding to tweets"
+
+				@@status.each do |mention|
+					if mention.id > @@last_id
+						composition_response mention.user.screen_name
+					else
+					end
+				end
+				puts "all tweets sent"
+				puts "updating most recent revieved tweet"
+				@@last_id = @@status[0].id
 			else
 				puts "no requests currently"
 			end
@@ -96,16 +95,29 @@ class TablaBot
 			if @@currently_running != true
 				monitor
 			else
+				puts "Things are running smoothly"
 			end
+		end
+	end
+
+
+	def tester
+
+
+		puts "@@status[2].user.screen_name= #{@@status[2].user.screen_name} "
+
+		puts " these are all the mentions turned into screen names"
+		@@status.each do |mention|
+			puts mention.user.screen_name
 		end
 	end
 	
 end
 
 
-TB= TablaBot.new
-TB.monitor
-TB.keep_going
 
+
+TB= TablaBot.new
+TB.keep_going
 
 

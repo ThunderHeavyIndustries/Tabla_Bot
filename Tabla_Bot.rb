@@ -6,6 +6,10 @@ require "Twitter"
 require_relative 'Twit_Init'
 
 class TablaBot
+
+
+
+
 	@@currently_running = false
 	@@bols= Hash[0,"Ta",1,"Tin",2,"Tun",3,"Din",4,"Te",5,"Re",6,"Tha",7,"Ge",8,"Ka",9,"Dha",10,"Dha2",11,"Dha3",12,"Dhi",13,"Dhe",14,"Dhet",15,"Kre",16,"The",17,"The2",18,"-"]
 
@@ -102,6 +106,12 @@ class TablaBot
 
 				if @@total_cycles % 33 == 0
 					compose_for_fun
+					
+				elsif @@total_cycles % 149 == 0
+
+					followers = @@client.followers("tabla_bot").map(&:screen_name)
+					lucky_follower = followers.sample
+					composition_response lucky_follower
 				end
 			end
 		end
@@ -121,14 +131,8 @@ class TablaBot
 
 
 	def tester
-
-
-		puts "@@status[2].user.screen_name= #{@@status[2].user.screen_name} "
-
-		puts " these are all the mentions turned into screen names"
-		@@status.each do |mention|
-			puts mention.user.screen_name
-		end
+		followers = @@client.followers("tabla_bot").map(&:screen_name)
+		puts followers
 	end
 	
 end
@@ -137,5 +141,5 @@ end
 
 
 TB= TablaBot.new
-TB.keep_going
+TB.tester
 

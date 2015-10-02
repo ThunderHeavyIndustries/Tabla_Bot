@@ -2,8 +2,6 @@
 # Feb 2015
 # Thunderheavyindustries@gmail.com
 
-
-
 require "Twitter"
 require_relative 'Twit_Init'
 
@@ -45,6 +43,23 @@ class TablaBot
 		@@client.update(com)
 	end
 
+	def compose_for_fun
+
+		str = ""
+		while str.length<140
+
+			c = @@bols[rand(19)] #calls a random bol from the hash of bols
+
+			if (str+" "+c).length <140
+				str+=" "+c #builds a string of hits
+			else
+				break
+			end
+		end
+		puts "tweeting just for fun"
+		@@client.update(str)
+	end
+
 	def monitor
 		@@currently_running = true
 
@@ -84,6 +99,10 @@ class TablaBot
 				@@last_id = @@status[0].id
 			else
 				puts "no requests currently"
+
+				if @@total_cycles % 33 == 0
+					compose_for_fun
+				end
 			end
 		end
 		@@currently_running = false
@@ -119,5 +138,4 @@ end
 
 TB= TablaBot.new
 TB.keep_going
-
 

@@ -104,10 +104,10 @@ class TablaBot
 			else
 				puts "no requests currently"
 
-				if @@total_cycles % 33 == 0
+				if @@total_cycles % 97 == 0
 					compose_for_fun
 					
-				elsif @@total_cycles % 149 == 0
+				elsif @@total_cycles % 499 == 0
 
 					followers = @@client.followers("tabla_bot").map(&:screen_name)
 					lucky_follower = followers.sample

@@ -95,7 +95,6 @@ class TablaBot
 				@@status.each do |mention|
 					if mention.id > @@last_id
 						composition_response mention.user.screen_name
-					else
 					end
 				end
 				puts "all tweets sent"
@@ -104,10 +103,10 @@ class TablaBot
 			else
 				puts "no requests currently"
 
-				if @@total_cycles % 97 == 0
+				if (Time.now.strftime "%H:%M:%S") == "18:00:00"
 					compose_for_fun
 					
-				elsif @@total_cycles % 499 == 0
+				elsif (Time.now.strftime "%H:%M:%S") == "9:00:00"
 
 					followers = @@client.followers("tabla_bot").map(&:screen_name)
 					lucky_follower = followers.sample
@@ -141,5 +140,5 @@ end
 
 
 TB= TablaBot.new
-TB.tester
+TB.keep_going
 

@@ -101,15 +101,12 @@ class TablaBot
 				puts "updating most recent revieved tweet"
 				@@last_id = @@status[0].id
 			else
-				puts "no requests currently"
-
-				if (Time.now.strftime "%H:%M:%S") == "18:00:00"
-					compose_for_fun
-					
-				elsif (Time.now.strftime "%H:%M:%S") == "9:00:00"
-
+				puts "no requests as of #{Time.now.strftime "%H:%M:%S"}"
+				if check_time
+					puts "It's 7 am/pm time for someone to get a tweet!"
 					followers = @@client.followers("tabla_bot").map(&:screen_name)
 					lucky_follower = followers.sample
+					puts "composing to #{lucky_follower} just for fun"
 					composition_response lucky_follower
 				end
 			end
@@ -117,6 +114,19 @@ class TablaBot
 		@@currently_running = false
 	end
 
+	def check_time 
+
+		ta = Time.now.strftime("%H:%M").split(":").map{|v| v.to_i}
+
+		if ta[0] == 19 && ta[1] < 3
+		  return true
+		elsif ta[0] == 7 && ta[1] < 3
+	   	  return true
+		else
+		  return false
+		end
+	  return false
+	end
 
 	def keep_going
 		while 1<2
@@ -133,12 +143,7 @@ class TablaBot
 		followers = @@client.followers("tabla_bot").map(&:screen_name)
 		puts followers
 	end
-	
 end
-
-
-
 
 TB= TablaBot.new
 TB.keep_going
-
